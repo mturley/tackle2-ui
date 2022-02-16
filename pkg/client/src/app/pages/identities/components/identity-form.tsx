@@ -45,7 +45,7 @@ export interface FormValues {
   settings: string;
   updateUser: string;
   user: string;
-  userCredentials: string;
+  userCredentials: OptionWithValue<"" | string>;
 }
 
 export interface IdentityFormProps {
@@ -234,7 +234,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
             }}
           />
         </FormGroup>
-        {formik.values.kind.value === "sc" && (
+        {formik.values?.kind?.value === "sc" && (
           <>
             <FormGroup
               label="User credentials"
@@ -275,6 +275,54 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
                 }}
               />
             </FormGroup>
+            {formik.values?.userCredentials.value === "userpass" && (
+              <>
+                <FormGroup
+                  label="Username"
+                  fieldId="user"
+                  isRequired={true}
+                  validated={getValidatedFromError(formik.errors.user)}
+                  helperTextInvalid={formik.errors.user}
+                >
+                  <TextInput
+                    type="text"
+                    name="user"
+                    aria-label="user"
+                    aria-describedby="user"
+                    isRequired={true}
+                    onChange={onChangeField}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.user}
+                    validated={getValidatedFromErrorTouched(
+                      formik.errors.user,
+                      formik.touched.user
+                    )}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Password"
+                  fieldId="password"
+                  isRequired={true}
+                  validated={getValidatedFromError(formik.errors.password)}
+                  helperTextInvalid={formik.errors.password}
+                >
+                  <TextInput
+                    type="text"
+                    name="password"
+                    aria-label="password"
+                    aria-describedby="password"
+                    isRequired={true}
+                    onChange={onChangeField}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                    validated={getValidatedFromErrorTouched(
+                      formik.errors.password,
+                      formik.touched.password
+                    )}
+                  />
+                </FormGroup>
+              </>
+            )}
           </>
         )}
         <ActionGroup>
