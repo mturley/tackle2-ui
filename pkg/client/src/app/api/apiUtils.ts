@@ -163,8 +163,6 @@ export const IdentityPageMapper = (
 ): PageRepresentation<Identity> => ({
   meta: { count: 0 },
   data: page,
-  // meta: { count: page.total_count },
-  // data: page._embedded["identity"],
 });
 
 export const fetchAllPages = <T, P>(

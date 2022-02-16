@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { getIdentities } from "@app/api/rest";
 import {
   Button,
-  Checkbox,
   Modal,
   PageSection,
   PageSectionVariants,
@@ -38,19 +37,13 @@ import { useFilterState } from "@app/shared/hooks/useFilterState";
 import { usePaginationState } from "@app/shared/hooks/usePaginationState";
 import { useSortState } from "@app/shared/hooks/useSortState";
 import { useFetch } from "@app/shared/hooks/useFetch";
-import { IdentityPageMapper } from "@app/api/apiUtils";
 import { useEntityModal } from "@app/shared/hooks/useEntityModal";
-import { ApplicationsIdentityForm } from "../application-inventory/application-list/components/ApplicationsIdentityForm";
 import { IdentityForm } from "./components/identity-form";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import { alertActions } from "@app/store/alert";
 
 const ENTITY_FIELD = "entity";
-
-const getRow = (rowData: IRowData): Identity => {
-  return rowData[ENTITY_FIELD];
-};
 
 export const Identities: React.FunctionComponent = () => {
   const { t } = useTranslation();
@@ -67,18 +60,8 @@ export const Identities: React.FunctionComponent = () => {
     close: closeIdentityModal,
   } = useEntityModal<Identity>();
 
-  /** fetch identities
-   *
-   *
-   *
-   *
-   */
-
   const fetchIdentities = useCallback(() => {
     return getIdentities();
-    /**
-     * TODO: update deps array when filter values change
-     */
   }, []);
 
   const {
@@ -257,9 +240,6 @@ export const Identities: React.FunctionComponent = () => {
           }
         />
         <Modal
-          // t('dialog.title.update')
-          // t('dialog.title.new')
-          // t('terms.application')
           title={t(`dialog.title.${identityToUpdate ? "update" : "new"}`, {
             what: t("terms.identity").toLowerCase(),
           })}
