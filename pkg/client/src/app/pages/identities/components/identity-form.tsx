@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AxiosError, AxiosPromise, AxiosResponse } from "axios";
-import { useFormik, FormikProvider, FormikHelpers } from "formik";
+import { useFormik, FormikProvider, FormikHelpers, useField } from "formik";
 import { object, string } from "yup";
 import {
   ActionGroup,
@@ -11,6 +11,7 @@ import {
   ExpandableSection,
   Form,
   FormGroup,
+  SelectVariant,
   TextArea,
   TextInput,
 } from "@patternfly/react-core";
@@ -18,6 +19,8 @@ import {
 import {
   SingleSelectFetchOptionValueFormikField,
   MultiSelectFetchOptionValueFormikField,
+  SimpleSelect,
+  OptionWithValue,
 } from "@app/shared/components";
 import { useFetchBusinessServices, useFetchTagTypes } from "@app/shared/hooks";
 import { DEFAULT_SELECT_MAX_HEIGHT } from "@app/Constants";
@@ -30,6 +33,7 @@ import {
 } from "@app/utils/utils";
 
 import "./identity-form.css";
+import { IdentityType, SelectType } from "./type-select";
 export interface FormValues {
   application: number;
   createTime: string;
@@ -38,7 +42,7 @@ export interface FormValues {
   encrypted: string;
   id: number;
   key: string;
-  kind: string;
+  kind: OptionWithValue<"" | IdentityType>;
   name: string;
   password: string;
   settings: string;
@@ -69,7 +73,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
     encrypted: "",
     id: 0,
     key: "",
-    kind: "testing kind",
+    // kind: { value: "", toString: () => "" },
     name: "",
     password: "",
     settings: "",
@@ -96,7 +100,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
       name: formValues.name.trim(),
       description: formValues.description.trim(),
       id: formValues.id,
-      kind: formValues.kind.trim(),
+      kind: formValues.kind.value.trim(),
       createUser: formValues.createUser.trim(),
     };
 
@@ -192,6 +196,15 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
                 formik.touched.description
               )}
             />
+          </FormGroup>
+          <FormGroup
+            label={t("terms.type")}
+            fieldId="type"
+            isRequired={true}
+            validated={getValidatedFromError(formik.errors.kind)}
+            helperTextInvalid={formik.errors.kind}
+          >
+            <SelectType value={formik.values.kind} onChange={onChangeField} />
           </FormGroup>
         </ExpandableSection>
         <ActionGroup>

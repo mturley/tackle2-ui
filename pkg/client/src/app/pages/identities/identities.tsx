@@ -16,7 +16,6 @@ import {
   expandable,
   ICell,
   IRow,
-  IRowData,
   sortable,
   Table,
   TableBody,
