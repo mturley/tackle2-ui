@@ -34,6 +34,10 @@ import {
 
 import "./identity-form.css";
 import { IdentityType, SelectType } from "./type-select";
+
+// export interface ITypeDropdown
+//   extends Pick< "id" | "displayName" | "email"> {}
+
 export interface FormValues {
   application: number;
   createTime: string;
@@ -42,7 +46,7 @@ export interface FormValues {
   encrypted: string;
   id: number;
   key: string;
-  kind: OptionWithValue<"" | IdentityType>;
+  kind: string;
   name: string;
   password: string;
   settings: string;
@@ -73,7 +77,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
     encrypted: "",
     id: 0,
     key: "",
-    // kind: { value: "", toString: () => "" },
+    kind: "",
     name: "",
     password: "",
     settings: "",
@@ -100,7 +104,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
       name: formValues.name.trim(),
       description: formValues.description.trim(),
       id: formValues.id,
-      kind: formValues.kind.value.trim(),
+      kind: formValues.kind,
       createUser: formValues.createUser.trim(),
     };
 
@@ -204,7 +208,43 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
             validated={getValidatedFromError(formik.errors.kind)}
             helperTextInvalid={formik.errors.kind}
           >
-            <SelectType value={formik.values.kind} onChange={onChangeField} />
+            <SingleSelectFetchOptionValueFormikField
+              fieldConfig={{ name: "kind" }}
+              selectConfig={{
+                variant: "typeahead",
+                "aria-label": "type",
+                "aria-describedby": "type",
+                typeAheadAriaLabel: "type",
+                toggleAriaLabel: "type",
+                clearSelectionsAriaLabel: "type",
+                removeSelectionAriaLabel: "type",
+                placeholderText: t("message.selectIdentityType"),
+                menuAppendTo: () => document.body,
+                maxHeight: DEFAULT_SELECT_MAX_HEIGHT,
+                fetchError: undefined,
+                isFetching: false,
+              }}
+              options={[
+                {
+                  value: "sc",
+                  toString: () => `Source Control`,
+                },
+                {
+                  value: "mvn",
+                  toString: () => `Maven Settings File`,
+                },
+                {
+                  value: "proxy",
+                  toString: () => `Proxy`,
+                },
+              ]}
+              toOptionWithValue={(value) => {
+                return {
+                  value,
+                  toString: () => value.toString(),
+                };
+              }}
+            />
           </FormGroup>
         </ExpandableSection>
         <ActionGroup>
