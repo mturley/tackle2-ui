@@ -9,6 +9,7 @@ import {
   Button,
   ButtonVariant,
   ExpandableSection,
+  FileUpload,
   Form,
   FormGroup,
   SelectVariant,
@@ -134,7 +135,14 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
   const onChangeField = (value: string, event: React.FormEvent<any>) => {
     formik.handleChange(event);
   };
-  console.log("values", formik.values);
+
+  const [file, setFile] = useState<File>();
+  const [isFileRejected, setIsFileRejected] = useState(false);
+
+  const handleFileRejected = () => {
+    setIsFileRejected(true);
+  };
+
   return (
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit}>
@@ -297,6 +305,60 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
                       formik.errors.user,
                       formik.touched.user
                     )}
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Password"
+                  fieldId="password"
+                  isRequired={true}
+                  validated={getValidatedFromError(formik.errors.password)}
+                  helperTextInvalid={formik.errors.password}
+                >
+                  <TextInput
+                    type="text"
+                    name="password"
+                    aria-label="password"
+                    aria-describedby="password"
+                    isRequired={true}
+                    onChange={onChangeField}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.password}
+                    validated={getValidatedFromErrorTouched(
+                      formik.errors.password,
+                      formik.touched.password
+                    )}
+                  />
+                </FormGroup>
+              </>
+            )}
+            {formik.values?.userCredentials.value === "scm" && (
+              <>
+                <FormGroup
+                  fieldId="key"
+                  label={
+                    "Upload your [SCM Private Key] file or paste its contents below."
+                  }
+                  helperTextInvalid="You should select a private key file."
+                  // validated={isFileRejected ? "error" : "default"}
+                >
+                  <FileUpload
+                    id="file"
+                    name="file"
+                    value={formik.values.key}
+                    filename={formik.values.key}
+                    onChange={(value, filename) => {
+                      if (filename && typeof value !== "string") {
+                        setFile(value);
+                        setIsFileRejected(false);
+                      } else if (!filename) {
+                        setFile(undefined);
+                      }
+                    }}
+                    dropzoneProps={{
+                      // accept: ".csv",
+                      onDropRejected: handleFileRejected,
+                    }}
+                    validated={isFileRejected ? "error" : "default"}
                   />
                 </FormGroup>
                 <FormGroup
