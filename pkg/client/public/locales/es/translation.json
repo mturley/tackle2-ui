@@ -123,6 +123,7 @@
         "overrideAssessmentConfirmation": "Esta aplicación ya fue evaluada ¿Deseas continuar?",
         "reviewInstructions": "Utilice esta sección para proporcionar su evaluación del posible plan de migración / modernización y la estimación del esfuerzo.",
         "savingSelection": "Guardando selección",
+        "selectIdentityType": "",
         "selectOwnerFromStakeholdersList": "Seleccione un propietario de la lista de interesados",
         "suggestedAdoptionPlanHelpText": "El enfoque sugerido para la migración basado en el esfuerzo, la prioridad y las dependencias."
     },

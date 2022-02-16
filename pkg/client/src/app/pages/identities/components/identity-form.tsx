@@ -17,12 +17,9 @@ import {
 } from "@patternfly/react-core";
 
 import {
-  SingleSelectFetchOptionValueFormikField,
-  MultiSelectFetchOptionValueFormikField,
-  SimpleSelect,
   OptionWithValue,
+  SingleSelectFetchOptionValueFormikField,
 } from "@app/shared/components";
-import { useFetchBusinessServices, useFetchTagTypes } from "@app/shared/hooks";
 import { DEFAULT_SELECT_MAX_HEIGHT } from "@app/Constants";
 import { createIdentity, TagTypeSortBy, updateIdentity } from "@app/api/rest";
 import { Identity, Tag } from "@app/api/models";
@@ -33,10 +30,6 @@ import {
 } from "@app/utils/utils";
 
 import "./identity-form.css";
-import { IdentityType, SelectType } from "./type-select";
-
-// export interface ITypeDropdown
-//   extends Pick< "id" | "displayName" | "email"> {}
 
 export interface FormValues {
   application: number;
@@ -46,12 +39,13 @@ export interface FormValues {
   encrypted: string;
   id: number;
   key: string;
-  kind: string;
+  kind: OptionWithValue<"" | string>;
   name: string;
   password: string;
   settings: string;
   updateUser: string;
   user: string;
+  userCredentials: string;
 }
 
 export interface IdentityFormProps {
@@ -71,18 +65,20 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
 
   const initialValues: FormValues = {
     application: 0,
-    createTime: "some time",
-    createUser: "some user",
+    createTime: "",
+    createUser: "",
     description: "",
     encrypted: "",
     id: 0,
     key: "",
     kind: "",
+    // kind: { value: "", toString: () => "" },
     name: "",
     password: "",
     settings: "",
     updateUser: "",
     user: "",
+    userCredentials: "",
   };
 
   const validationSchema = object().shape({
@@ -104,7 +100,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
       name: formValues.name.trim(),
       description: formValues.description.trim(),
       id: formValues.id,
-      kind: formValues.kind,
+      kind: formValues.kind.value.trim(),
       createUser: formValues.createUser.trim(),
     };
 
@@ -138,9 +134,7 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
   const onChangeField = (value: string, event: React.FormEvent<any>) => {
     formik.handleChange(event);
   };
-
-  const [isBasicExpanded, setBasicExpanded] = React.useState(true);
-
+  console.log("values", formik.values);
   return (
     <FormikProvider value={formik}>
       <Form onSubmit={formik.handleSubmit}>
@@ -151,102 +145,138 @@ export const IdentityForm: React.FC<IdentityFormProps> = ({
             title={getAxiosErrorMessage(error)}
           />
         )}
-        <ExpandableSection
-          toggleText={"Basic information"}
-          className="toggle"
-          onToggle={() => setBasicExpanded(!isBasicExpanded)}
-          isExpanded={isBasicExpanded}
+        <FormGroup
+          label={t("terms.name")}
+          fieldId="name"
+          isRequired={true}
+          validated={getValidatedFromError(formik.errors.name)}
+          helperTextInvalid={formik.errors.name}
         >
-          <FormGroup
-            label={t("terms.name")}
-            fieldId="name"
+          <TextInput
+            type="text"
+            name="name"
+            aria-label="name"
+            aria-describedby="name"
             isRequired={true}
-            validated={getValidatedFromError(formik.errors.name)}
-            helperTextInvalid={formik.errors.name}
-          >
-            <TextInput
-              type="text"
-              name="name"
-              aria-label="name"
-              aria-describedby="name"
-              isRequired={true}
-              onChange={onChangeField}
-              onBlur={formik.handleBlur}
-              value={formik.values.name}
-              validated={getValidatedFromErrorTouched(
-                formik.errors.name,
-                formik.touched.name
-              )}
-            />
-          </FormGroup>
-          <FormGroup
-            label={t("terms.description")}
-            fieldId="description"
-            isRequired={false}
-            validated={getValidatedFromError(formik.errors.description)}
-            helperTextInvalid={formik.errors.description}
-          >
-            <TextInput
-              type="text"
-              name="description"
-              aria-label="description"
-              aria-describedby="description"
-              isRequired={true}
-              onChange={onChangeField}
-              onBlur={formik.handleBlur}
-              value={formik.values.description}
-              validated={getValidatedFromErrorTouched(
-                formik.errors.description,
-                formik.touched.description
-              )}
-            />
-          </FormGroup>
-          <FormGroup
-            label={t("terms.type")}
-            fieldId="type"
+            onChange={onChangeField}
+            onBlur={formik.handleBlur}
+            value={formik.values.name}
+            validated={getValidatedFromErrorTouched(
+              formik.errors.name,
+              formik.touched.name
+            )}
+          />
+        </FormGroup>
+        <FormGroup
+          label={t("terms.description")}
+          fieldId="description"
+          isRequired={false}
+          validated={getValidatedFromError(formik.errors.description)}
+          helperTextInvalid={formik.errors.description}
+        >
+          <TextInput
+            type="text"
+            name="description"
+            aria-label="description"
+            aria-describedby="description"
             isRequired={true}
-            validated={getValidatedFromError(formik.errors.kind)}
-            helperTextInvalid={formik.errors.kind}
-          >
-            <SingleSelectFetchOptionValueFormikField
-              fieldConfig={{ name: "kind" }}
-              selectConfig={{
-                variant: "typeahead",
-                "aria-label": "type",
-                "aria-describedby": "type",
-                typeAheadAriaLabel: "type",
-                toggleAriaLabel: "type",
-                clearSelectionsAriaLabel: "type",
-                removeSelectionAriaLabel: "type",
-                placeholderText: t("message.selectIdentityType"),
-                menuAppendTo: () => document.body,
-                maxHeight: DEFAULT_SELECT_MAX_HEIGHT,
-                fetchError: undefined,
-                isFetching: false,
-              }}
-              options={[
-                {
-                  value: "sc",
-                  toString: () => `Source Control`,
-                },
-                {
-                  value: "mvn",
-                  toString: () => `Maven Settings File`,
-                },
-                {
-                  value: "proxy",
-                  toString: () => `Proxy`,
-                },
-              ]}
-              toOptionWithValue={(value) => {
-                return {
-                  value,
-                  toString: () => value.toString(),
-                };
-              }}
-            />
-          </FormGroup>
-        </ExpandableSection>
+            onChange={onChangeField}
+            onBlur={formik.handleBlur}
+            value={formik.values.description}
+            validated={getValidatedFromErrorTouched(
+              formik.errors.description,
+              formik.touched.description
+            )}
+          />
+        </FormGroup>
+        <FormGroup
+          label={t("terms.type")}
+          fieldId="type"
+          isRequired={true}
+          validated={getValidatedFromError(formik.errors.kind)}
+          helperTextInvalid={formik.errors.kind}
+        >
+          <SingleSelectFetchOptionValueFormikField
+            fieldConfig={{ name: "kind" }}
+            selectConfig={{
+              variant: "typeahead",
+              "aria-label": "type",
+              "aria-describedby": "type",
+              typeAheadAriaLabel: "type",
+              toggleAriaLabel: "type",
+              clearSelectionsAriaLabel: "type",
+              removeSelectionAriaLabel: "type",
+              placeholderText: t("message.selectIdentityType"),
+              menuAppendTo: () => document.body,
+              maxHeight: DEFAULT_SELECT_MAX_HEIGHT,
+              fetchError: undefined,
+              isFetching: false,
+            }}
+            options={[
+              {
+                value: "sc",
+                toString: () => `Source Control`,
+              },
+              {
+                value: "mvn",
+                toString: () => `Maven Settings File`,
+              },
+              {
+                value: "proxy",
+                toString: () => `Proxy`,
+              },
+            ]}
+            toOptionWithValue={(value) => {
+              return {
+                value,
+                toString: () => value.toString(),
+              };
+            }}
+          />
+        </FormGroup>
+        {formik.values.kind.value === "sc" && (
+          <>
+            <FormGroup
+              label="User credentials"
+              isRequired
+              fieldId="userCredentials"
+            >
+              <SingleSelectFetchOptionValueFormikField
+                fieldConfig={{ name: "userCredentials" }}
+                selectConfig={{
+                  variant: "typeahead",
+                  "aria-label": "userCredentials",
+                  "aria-describedby": "userCredentials",
+                  typeAheadAriaLabel: "userCredentials",
+                  toggleAriaLabel: "userCredentials",
+                  clearSelectionsAriaLabel: "userCredentials",
+                  removeSelectionAriaLabel: "userCredentials",
+                  placeholderText: "",
+                  menuAppendTo: () => document.body,
+                  maxHeight: DEFAULT_SELECT_MAX_HEIGHT,
+                  fetchError: undefined,
+                  isFetching: false,
+                }}
+                options={[
+                  {
+                    value: "userpass",
+                    toString: () => `Username/Password`,
+                  },
+                  {
+                    value: "scm",
+                    toString: () => `SCM Private Key/Passphrase`,
+                  },
+                ]}
+                toOptionWithValue={(value) => {
+                  return {
+                    value,
+                    toString: () => value.toString(),
+                  };
+                }}
+              />
+            </FormGroup>
+          </>
+        )}
         <ActionGroup>
           <Button
             type="submit"
