@@ -537,6 +537,10 @@ export interface JiraTracker {
   insecure: boolean;
 }
 
+export interface AnalysisCompositeDependency {
+  foo: string;
+}
+
 export interface AnalysisDependency {
   createTime: string;
   name: string;

@@ -36,6 +36,7 @@ import {
   Taskgroup,
   MigrationWave,
   Ticket,
+  AnalysisCompositeDependency,
 } from "./models";
 import { QueryKey } from "@tanstack/react-query";
 import { serializeRequestParamsForHub } from "@app/shared/hooks/table-controls";
@@ -72,6 +73,8 @@ export const RULEBUNDLES = HUB + "/rulebundles";
 export const FILES = HUB + "/files";
 export const CACHE = HUB + "/cache/m2";
 
+export const ANALYSIS_COMPOSITE_DEPENDENCIES =
+  HUB + "/analyses/composite/dependencies";
 export const ANALYSIS_DEPENDENCIES = HUB + "/analyses/dependencies";
 export const ANALYSIS_ISSUES = HUB + "/analyses/composite/issues";
 
@@ -634,6 +637,12 @@ export const getHubPaginatedResult = <T>(
       total: headers["x-total"] ? parseInt(headers["x-total"], 10) : 0,
       params,
     }));
+
+export const getCompositeDependencies = (params: HubRequestParams = {}) =>
+  getHubPaginatedResult<AnalysisCompositeDependency>(
+    ANALYSIS_COMPOSITE_DEPENDENCIES,
+    params
+  );
 
 export const getDependencies = (params: HubRequestParams = {}) =>
   getHubPaginatedResult<AnalysisDependency>(ANALYSIS_DEPENDENCIES, params);

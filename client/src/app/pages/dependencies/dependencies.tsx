@@ -32,7 +32,10 @@ import {
   TableHeaderContentWithControls,
   TableRowContentWithControls,
 } from "@app/shared/components/table-controls";
-import { useFetchDependencies } from "@app/queries/dependencies";
+import {
+  useFetchCompositeDependencies,
+  useFetchDependencies,
+} from "@app/queries/dependencies";
 import { useSelectionState } from "@migtools/lib-ui";
 import { getHubRequestParams } from "@app/shared/hooks/table-controls";
 import { PageDrawerContent } from "@app/shared/page-drawer-context";
@@ -76,6 +79,11 @@ export const Dependencies: React.FC = () => {
       },
     })
   );
+
+  const {
+    result: { data: compositeDependencies },
+  } = useFetchCompositeDependencies();
+  console.log({ compositeDependencies });
 
   const tableControls = useTableControlProps({
     ...tableControlState, // Includes filterState, sortState and paginationState
