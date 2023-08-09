@@ -7,15 +7,13 @@ import { IExtraArgsForURLParamHooks } from "../types";
 //  - The key of an expanded column in that row, if the table is compound-expandable
 //  - The `true` literal value (the entire row is expanded), if non-compound-expandable
 export type TExpandedCells<TColumnKey extends string> = Record<
-  string,
+  string | number,
   TColumnKey | boolean
 >;
 
 export interface IExpansionState<TColumnKey extends string> {
-  expandedCells: Record<string, boolean | TColumnKey>;
-  setExpandedCells: (
-    newExpandedCells: Record<string, boolean | TColumnKey>
-  ) => void;
+  expandedCells: TExpandedCells<TColumnKey>;
+  setExpandedCells: (newExpandedCells: TExpandedCells<TColumnKey>) => void;
 }
 
 export const useExpansionState = <
